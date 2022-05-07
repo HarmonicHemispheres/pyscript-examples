@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>Basic App</title>
+    <!--Import Google Icon Font-->
+    <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
+    
+    <!--Import materialize.css-->
+    <!-- <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/> -->
+
+    <!-- Compiled and minified CSS -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> -->
+
+    <!-- Compiled and minified JavaScript -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script> -->
+
+    <!-- BULMA CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma-rtl.min.css"> -->
+            
+    <!-- PYSCRIPT -->
+    <!-- <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" /> -->
+    <!-- <script src="https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"></script> -->
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <py-env>
+    - requests
+    </py-env>
+
+  </head>
+  <body>
+      <style>
+        #char_container {
+            width:100%;
+            text-align:center;
+        }
+        #char_container > span {
+            width: calc(100% / 6);  
+            display: inline-block;
+            vertical-align: top;   
+            border:1px solid red;
+            text-align:center;
+            margin:2%;    
+            padding:20px;
+        }
+      </style>
+    <py-script>
+# ---- DEFINE IMPORTS ---- #
+from js import console, XMLHttpRequest, Blob
+import random
+import json
+
+# ---- DEFINE GLOBALS ---- #
+WORD_TO_GUESS = ""
+GUESS_COUNT = 0
+WORD_GUESSED = False
+TAG_COLOR_CLASSES = {
+    "unknown": "is-light",
+    "match": "is-success",
+    "wrong": "is-danger"
+}
+
+# ---- DEFINE ELEMENTS ---- #
+el_task_template = Element("guess-template").select('div', from_content=True)
+el_span_template = Element("guess-span-template").select('span', from_content=True)
+el_new_guess = Element("guess-input")
+el_input_len = Element("guess-length-input")
+el_input_msg = Element("input-message")
+el_guess_list = Element("guess-list")
+
+def get_new_word(*args, **kwargs):
+    global WORD_TO_GUESS
+    global WORD_GUESSED
+
+    # --
+    word_len = el_input_len.element.value
+    if word_len == "?":
+        word_len = random.randrange(4,10)
+
+    # --
+    WORD_GUESSED = False
+
+    # --
+    req = XMLHttpRequest.new()
+    req.open("GET", f"https://random-word-api.herokuapp.com/word?length={word_len}", False)
+    blob = Blob.new(["{}"], {type : 'application/json'})
+    req.send(blob)
+    word = json.loads(req.response)[0]
+    WORD_TO_GUESS = word
+    print(WORD_TO_GUESS)
+
+    # --
+    el_guess_list.element.innerText = ''
+    el_new_guess.element.innerHTML = ''
+    el_input_msg.element.style.display = "none"; 
+
+    # --
+    set_default()
+
+def get_score(word, word_to_guess):
+    result = []
+    for i, char in enumerate(word):
+        if char == word_to_guess[i]:
+            result.append("match")
+        elif char in word_to_guess:
+            result.append("wrong")
+        else:
+            result.append("unknown")
+    return result
+
+def guess(*args, **kwargs):
+    # --
+    global GUESS_COUNT
+    global WORD_GUESSED
+    global WORD_TO_GUESS
+
+    # --
+    next_guess_id = GUESS_COUNT+1
+    guess = el_new_guess.element.value
+    if WORD_GUESSED == True:
+        return
+
+    if guess == "":
+        el_input_msg.element.innerHTML = f"Get a new word to guess first!" 
+        el_input_msg.element.style.display = "block"; 
+        
+    if len(guess) > len(WORD_TO_GUESS):
+        el_input_msg.element.innerHTML = f"Guess is too long! Word must be {len(WORD_TO_GUESS)} characters" 
+        el_input_msg.element.style.display = "block"; 
+        
+    else:
+        # -- get guess score
+        results = get_score(guess, WORD_TO_GUESS)
+
+        guessHtml = el_task_template.clone(next_guess_id, to=el_guess_list)
+        
+        # -- color chars
+        for i,char in enumerate(results):
+            new_char_html = el_span_template.clone(f"guess-{i}", to=guessHtml)
+            new_char_html.element.innerText = guess[i]
+            new_char_html.element.classList.toggle(TAG_COLOR_CLASSES[results[i]])
+            guessHtml.element.appendChild(new_char_html.element)
+        
+        el_guess_list.element.insertBefore(guessHtml.element, el_guess_list.element.firstChild)
+        
+        GUESS_COUNT += 1
+
+        # --
+        if guess == WORD_TO_GUESS:
+            WORD_GUESSED = True
+
+
+def set_default(*args, **kwargs):
+    # -- get word
+    word = WORD_TO_GUESS
+    
+    # -- 
+    guessHtml = el_task_template.clone("0", to=el_guess_list)
+
+    for i, char in enumerate(word):
+        new_char_html = el_span_template.clone(f"default-{i}", to=guessHtml)
+        new_char_html.element.innerText = "_"
+        guessHtml.element.appendChild(new_char_html.element)
+    
+    el_guess_list.element.appendChild(guessHtml.element)
+
+    </py-script>
+
+    <!-- UI -->
+    <div id="div1" class="container">
+        <div class="section">
+            <h1 class="title is-2">Pydle</h1>
+            <p>
+                Pydle is a <a href="https://www.nytimes.com/games/wordle/index.html">Wordle</a> implementation with the newly released <a href="">Pyscript</a> framework from Anaconda Inc. First generate a new word, then fill out a guess and submit with the green button. A specific word length can be specified or a ? for a random word length. NOTE: Pyscript may require a few seconds to load as it is in an alpha state currently.
+            </p>
+
+            <br>
+            <input  id="guess-input" 
+                    type="text" 
+                    class="input is-info" 
+                    placeholder="have a guess"></input>
+            <br>
+            
+            <label id="input-message" class="tag" style="display: none;"></label>
+
+            <br>
+
+            <button  id="submit-guess-btn"
+                        class="button is-primary"
+                        type="submit" 
+                        pys-onClick="guess">Make A Guess</button>
+            <button  id="new-word-btn"
+                        class="button"
+                        type="submit" 
+                        pys-onClick="get_new_word">Get New Word</button>
+            <input  id="guess-length-input" 
+                    type="text" 
+                    style="width:120px"
+                    class="input" 
+                    placeholder="word length?"
+                    value="?"></input>
+        </div>
+        <div class="section" id="guess-section">
+            <h3 class="title is-2">Guesses</h3>
+            <div id="guess-list" class="container"></div>
+        </div>
+    </div>
+
+    <!-- TEMPLATE -->
+    <template id="guess-span-template">
+        <span class="tag" style="font-size:30px;width: 50px;"></span>
+    </template> 
+    <template id="guess-template">
+        <div class="container is-max-desktop">
+            <span></span>
+        </div>
+    </template> 
+</body>
+</html>
