@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>PyScript Buttons</title>
+
+    <!-- BULMA CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+            
+    <!-- PYSCRIPT -->
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <py-env></py-env>
+
+  </head>
+  <body>
+    <py-script>
+from js import console
+
+def button_func(*args, **kwargs):
+    console.log("button was pressed!")
+
+    </py-script>
+
+    <!-- UI -->
+    <div id="div1" class="container">
+        <div class="section">
+            <h1 class="title is-2">PyScript Example for Buttons</h1>
+            <p>see console log for output</p>
+            <br>
+            <button id="btn"
+                    class="button is-primary"
+                    type="submit" 
+                    pys-onClick="button_func">Press Me!</button>
+        </div>
+    </div>
+
+</body>
+</html>

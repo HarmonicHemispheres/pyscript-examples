@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>PyScript HTTP Requests</title>
+
+    <!-- BULMA CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+            
+    <!-- PYSCRIPT -->
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <py-env></py-env>
+
+  </head>
+  <body>
+    <py-script>
+# ---- DEFINE IMPORTS ---- #
+from js import console, XMLHttpRequest, Blob
+import json
+
+req = XMLHttpRequest.new()
+req.open("GET", f"https://api.agify.io/?name=bella", False)
+blob = Blob.new(["{}"], {type : 'application/json'})
+req.send(blob)
+resp = json.loads(req.response)
+
+# -- show result
+console.log(json.dumps(resp, indent=3))
+
+    </py-script>
+
+    <!-- UI -->
+    <div id="div1" class="container">
+        <div class="section">
+            <h1 class="title is-2">PyScript Example for HTTP Requests</h1>
+            <p>see console log for output</p>
+        </div>
+    </div>
+
+</body>
+</html>

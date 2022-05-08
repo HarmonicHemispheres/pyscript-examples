@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>PyScript Printing</title>
+
+    <!-- BULMA CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma-rtl.min.css"> -->
+            
+    <!-- PYSCRIPT -->
+    <!-- <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" /> -->
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <py-env></py-env>
+
+  </head>
+  <body>
+    <py-script>
+# ---- DEFINE IMPORTS ---- #
+from js import console, XMLHttpRequest, Blob
+
+
+# ---- SIMPLE PRINTS ---- #
+# printing via python
+print("example from python")
+
+# printing via pyodide\JS
+console.log("example from JS")
+
+
+# ---- COLLECTION PRINTS ---- #
+print([1,2,3,4,5])
+console.log([1,2,3,4,5])
+console.log(str([1,2,3,4,5]))
+
+
+    </py-script>
+
+    <!-- UI -->
+    <div id="div1" class="container">
+        <div class="section">
+            <h1 class="title is-2">PyScript Example for Printing to console</h1>
+            <p>see console log for output</p>
+        </div>
+    </div>
+
+</body>
+</html>

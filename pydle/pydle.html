@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <title>Pydle (v1.0.1)</title>
+    <title>Pydle (v1.0.2)</title>
     <!--Import Google Icon Font-->
     <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
     
@@ -52,7 +52,6 @@ import json
 
 # ---- DEFINE GLOBALS ---- #
 WORD_TO_GUESS = ""
-WORD_DEF = ""
 GUESS_COUNT = 0
 WORD_GUESSED = False
 TAG_COLOR_CLASSES = {
@@ -65,52 +64,38 @@ TAG_COLOR_CLASSES = {
 el_task_template = Element("guess-template").select('div', from_content=True)
 el_span_template = Element("guess-span-template").select('span', from_content=True)
 el_new_guess = Element("guess-input")
+el_input_len = Element("guess-length-input")
 el_input_msg = Element("input-message")
 el_guess_list = Element("guess-list")
 
 def get_new_word(*args, **kwargs):
     global WORD_TO_GUESS
     global WORD_GUESSED
-    global WORD_DEF
+
+    # --
+    word_len = el_input_len.element.value
+    if word_len == "?":
+        word_len = random.randrange(4,10)
 
     # --
     WORD_GUESSED = False
-    WORD_TO_GUESS = ""
 
     # --
-    word, desc = lookup_word()
-    WORD_TO_GUESS = str(word)
-    WORD_DEF = str(desc)
-    pyscript.write('description', str(WORD_DEF))
-
-    print(f"--> {WORD_TO_GUESS} :: {WORD_DEF}")
+    req = XMLHttpRequest.new()
+    req.open("GET", f"https://random-word-api.herokuapp.com/word?length={word_len}", False)
+    blob = Blob.new(["{}"], {type : 'application/json'})
+    req.send(blob)
+    word = json.loads(req.response)[0]
+    WORD_TO_GUESS = word
+    print(WORD_TO_GUESS)
 
     # --
     el_guess_list.element.innerText = ''
     el_new_guess.element.innerHTML = ''
-    el_input_msg.element.style.display = "none"
+    el_input_msg.element.style.display = "none"; 
 
     # --
     set_default()
-
-def lookup_word():
-    req = XMLHttpRequest.new()
-    req.open("GET", f"https://random-words-api.vercel.app/word", False)
-    blob = Blob.new(["{}"], {type : 'application/json'})
-    req.send(blob)
-    data = json.loads(req.response)[0]
-    return data["word"], data["definition"]
-
-def get_score(word, word_to_guess):
-    result = []
-    for i, char in enumerate(word):
-        if char == word_to_guess[i]:
-            result.append("match")
-        elif char in word_to_guess:
-            result.append("wrong")
-        else:
-            result.append("unknown")
-    return result
 
 def give_up(*args, **kwargs):
     global WORD_TO_GUESS
@@ -127,6 +112,17 @@ def give_up(*args, **kwargs):
     
     el_guess_list.element.insertBefore(guessHtml.element, el_guess_list.element.firstChild)
     WORD_GUESSED = True
+
+def get_score(word, word_to_guess):
+    result = []
+    for i, char in enumerate(word):
+        if char == word_to_guess[i]:
+            result.append("match")
+        elif char in word_to_guess:
+            result.append("wrong")
+        else:
+            result.append("unknown")
+    return result
 
 def guess(*args, **kwargs):
     # --
@@ -191,7 +187,7 @@ def set_default(*args, **kwargs):
         <div class="section">
             <h1 class="title is-2">Pydle</h1>
             <p>
-                Pydle is a <a href="https://www.nytimes.com/games/wordle/index.html">Wordle</a> implementation with the newly released <a href="">Pyscript</a> framework from Anaconda Inc. First generate a new word, then fill out a guess and submit with the green button. NOTE: Pyscript may require a few seconds to load as it is in an alpha state currently.
+                Pydle is a <a href="https://www.nytimes.com/games/wordle/index.html">Wordle</a> implementation with the newly released <a href="">Pyscript</a> framework from Anaconda Inc. First generate a new word, then fill out a guess and submit with the green button. A specific word length can be specified or a ? for a random word length. NOTE: Pyscript may require a few seconds to load as it is in an alpha state currently.
             </p>
 
             <br>
@@ -213,15 +209,19 @@ def set_default(*args, **kwargs):
                         class="button"
                         type="submit" 
                         pys-onClick="get_new_word">Get New Word</button>
+            <input  id="guess-length-input" 
+                    type="text" 
+                    style="width:120px"
+                    class="input" 
+                    placeholder="word length?"
+                    value="?"></input>
             <button  id="giveup-btn"
-                        class="button"
-                        type="submit" 
-                        pys-onClick="give_up">Give Up</button>
+                    class="button"
+                    type="submit" 
+                    pys-onClick="give_up">Give Up</button>
         </div>
         <div class="section" id="guess-section">
             <h3 class="title is-2">Guesses</h3>
-            <label id="description" class="tag"></label>
-            <br></br>
             <div id="guess-list"></div>
         </div>
         <br></br>
@@ -237,7 +237,7 @@ def set_default(*args, **kwargs):
         <footer class="footer">
             <div class="content has-text-centered">
                 <p>
-                  <strong>Pydle (v1.0.1)</strong> by <a href="https://www.linkedin.com/in/robby-boney-717486133/">Robby Boney</a>. The source code is licensed
+                  <strong>Pydle (v1.0.2)</strong> by <a href="https://www.linkedin.com/in/robby-boney-717486133/">Robby Boney</a>. The source code is licensed
                   <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. Source Code can be found at <a href="https://github.com/HarmonicHemispheres/pyscript-examples">Github</a>
                 </p>
         </footer>

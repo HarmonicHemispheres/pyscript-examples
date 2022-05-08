@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>PyScript HTML Elements</title>
+
+    <!-- BULMA CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+            
+    <!-- PYSCRIPT -->
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <py-env></py-env>
+
+  </head>
+  <body>
+    <py-script>
+# ---- DEFINE GLOBALS ---- #
+count = 1
+
+# ---- DEFINE ELEMENTS ---- #
+el_output = Element("output")
+
+# ---- READ\WRITE TO ELEMENTS ---- #
+def add_number(*args, **kwargs):
+    global count
+
+    el_output.element.innerText = count 
+    count += 1
+
+    </py-script>
+
+    <!-- UI -->
+    <div id="div1" class="container">
+        <div class="section">
+            <h1 class="title is-2">PyScript Example for HTML Elements</h1>
+            <br>
+            <button id="btn"
+                    class="button is-primary"
+                    type="submit" 
+                    pys-onClick="add_number">Increase Number</button>
+            <br></br>
+            <label id="output">0</label>
+        </div>
+    </div>
+
+</body>
+</html>
