@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <title>Basic App</title>
+    <title>Pydle (v1.0.0)</title>
     <!--Import Google Icon Font-->
     <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
     
@@ -25,9 +25,7 @@
     <!-- <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" /> -->
     <!-- <script src="https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"></script> -->
     <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
-    <py-env>
-    - requests
-    </py-env>
+    <py-env></py-env>
 
   </head>
   <body>
@@ -118,7 +116,7 @@ def guess(*args, **kwargs):
 
     # --
     next_guess_id = GUESS_COUNT+1
-    guess = el_new_guess.element.value
+    guess = str(el_new_guess.element.value).lower()
     if WORD_GUESSED == True:
         return
 
@@ -204,16 +202,34 @@ def set_default(*args, **kwargs):
         </div>
         <div class="section" id="guess-section">
             <h3 class="title is-2">Guesses</h3>
-            <div id="guess-list" class="container"></div>
+            <div id="guess-list"></div>
         </div>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+
+        <footer class="footer">
+            <div class="content has-text-centered">
+                <p>
+                  <strong>Pydle (v1.0.0)</strong> by <a href="https://www.linkedin.com/in/robby-boney-717486133/">Robby Boney</a>. The source code is licensed
+                  <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. Source Code can be found at <a href="https://github.com/HarmonicHemispheres/pyscript-examples">Github</a>
+                </p>
+        </footer>
     </div>
+    
 
     <!-- TEMPLATE -->
     <template id="guess-span-template">
         <span class="tag" style="font-size:30px;width: 50px;"></span>
     </template> 
     <template id="guess-template">
-        <div class="container is-max-desktop">
+        <div class="container">
             <span></span>
         </div>
     </template> 
