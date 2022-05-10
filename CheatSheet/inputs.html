@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>PyScript Inputs</title>
+
+    <!-- BULMA CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+            
+    <!-- PYSCRIPT -->
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <py-env></py-env>
+
+  </head>
+  <body>
+    <py-script>
+# ---- DEFINE GLOBALS ---- #
+count = 1
+
+# ---- DEFINE ELEMENTS ---- #
+el_input = Element("input-id")
+el_output = Element("output")
+
+# ---- READ\WRITE TO ELEMENTS ---- #
+def add_number(*args, **kwargs):
+    global count
+    
+    # -- get element from input
+    amount = int(el_input.element.value)
+    count += amount
+
+    el_output.element.innerText = count 
+
+    </py-script>
+
+    <!-- UI -->
+    <div id="div1" class="container">
+        <div class="section">
+            <h1 class="title is-2">PyScript Example for Inputs</h1>
+            <br>
+            <input  id="input-id" 
+                    type="text" 
+                    style="width:120px"
+                    class="input" 
+                    placeholder="amount"
+                    value="1"></input>
+            <br>
+            <button id="btn"
+                    class="button is-primary"
+                    type="submit" 
+                    pys-onClick="add_number">Increase Number</button>
+            <br></br>
+            <label id="output">0</label>
+        </div>
+    </div>
+
+</body>
+</html>
